@@ -11,19 +11,9 @@ public class TicTacToe {
     Scanner scanner = new Scanner(System.in);
 
     public void startGame() {
-        showPlayingField();
-        if (FIRST_MOVE == 1) {
-            System.out.println("Ваш первый ход");
+            showPlayingField();
             while (true) {
-                humanStep();
-                showField();
-                if (checkConditionVictory()) {
-                    return;
-                }
-                if (checkConditionDraw()) {
-                    return;
-                }
-                computerStep();
+                determiningTurnOrder();
                 showField();
                 if (checkConditionVictory()) {
                     return;
@@ -32,25 +22,23 @@ public class TicTacToe {
                     return;
                 }
             }
-        } else {
-            System.out.println("Первый ходит компьютер");
-            while (true) {
-                computerStep();
-                showField();
-                if (checkConditionVictory()) {
-                    return;
-                }
-                if (checkConditionDraw()) {
-                    return;
-                }
+        }
+
+    private void determiningTurnOrder() {
+        if(FIRST_MOVE == 1) {
+            if(numberMovies % 2 != 0) {
                 humanStep();
-                showField();
-                if (checkConditionVictory()) {
-                    return;
-                }
-                if (checkConditionDraw()) {
-                    return;
-                }
+            }
+            else {
+                computerStep();
+            }
+        }
+        else {
+            if(numberMovies % 2 != 0) {
+                computerStep();
+            }
+            else {
+                humanStep();
             }
         }
     }
@@ -66,96 +54,118 @@ public class TicTacToe {
 
     private void computerStep() {
         System.out.println("Ход компьютера");
-        computerMoveLogic();
+        numberPlayingField = computerMoveLogic();
         convertArrayPlayField();
         checkInputDoubleFieldComputer();
         sign = checkInputComputerSign();
     }
 
-
-    private void computerLogicFirstMove() {
-        if (FIELD[1][1] == 'x') {
-            int anyCornerField = (int) (1 + Math.random() * 4);
-            switch (anyCornerField) {
-                case 1 -> numberPlayingField = 1;
-                case 2 -> numberPlayingField = 3;
-                case 3 -> numberPlayingField = 7;
-                case 4 -> numberPlayingField = 9;
-            }
+    private int computerMoveLogic() {
+        if (numberMovies == 1) {
+          return computerLogicFirstMove();
         } else {
-            numberPlayingField = 5;
+            if (FIRST_MOVE == 1) {
+                if(testWinComputer() > 0) {
+                    return testWinComputer();
+                }
+                else if(testWinComputer() < 0) {
+                    return testLoseComputer();
+                }
+                else {
+                    return (int) (1 + Math.random() * 9);
+                }
+            } else {
+                if(testLoseComputer() > 0) {
+                    return testLoseComputer();
+                }
+                else if(testLoseComputer() < 0) {
+                    return testWinComputer();
+                }
+                else {
+                    return (int) (1 + Math.random() * 9);
+                    }
+                }
+            }
         }
+
+    private int computerLogicFirstMove() {
+        if (FIRST_MOVE == 1) {
+            if (FIELD[1][1] == 'x') {
+                int anyCornerField = (int) (1 + Math.random() * 4);
+                switch (anyCornerField) {
+                    case 1 -> {return 1;}
+                    case 2 -> {return 3;}
+                    case 3 -> {return 7;}
+                    case 4 -> {return 9;}
+                }
+            } else {
+                return 5;
+            }
+        }
+        return 5;
     }
 
-    private void testWinComputer() {
+    private int testWinComputer() {
         if (FIELD[0][1] == 'o' && FIELD[0][2] == 'o' || FIELD[1][0] == 'o' && FIELD[2][0] == 'o'
                 || FIELD[1][1] == 'o' && FIELD[2][2] == 'o') {
-            numberPlayingField = 1;
+            return 1;
         } else if (FIELD[0][0] == 'o' && FIELD[0][2] == 'o' || FIELD[1][1] == 'o' && FIELD[2][1] == 'o') {
-            numberPlayingField = 2;
+            return 2;
         } else if (FIELD[0][0] == 'o' && FIELD[0][1] == 'o' || FIELD[1][2] == 'o' && FIELD[2][2] == 'o'
                 || FIELD[2][0] == 'o' && FIELD[1][1] == 'o') {
-            numberPlayingField = 3;
+            return 3;
         } else if (FIELD[0][0] == 'o' && FIELD[2][0] == 'o' || FIELD[1][1] == 'o' && FIELD[1][2] == 'o') {
-            numberPlayingField = 4;
+            return 4;
         } else if (FIELD[0][0] == 'o' && FIELD[2][2] == 'o' || FIELD[0][2] == 'o' && FIELD[2][0] == 'o'
                 || FIELD[1][0] == 'o' && FIELD[1][2] == 'o' || FIELD[0][1] == 'o' && FIELD[2][1] == 'o') {
-            numberPlayingField = 5;
+            return 5;
         } else if (FIELD[0][2] == 'o' && FIELD[2][2] == 'o' || FIELD[1][0] == 'o' && FIELD[1][1] == 'o') {
-            numberPlayingField = 6;
+            return 6;
         } else if (FIELD[0][0] == 'o' && FIELD[1][0] == 'o' || FIELD[2][1] == 'o' && FIELD[2][2] == 'o'
                 || FIELD[0][2] == 'o' && FIELD[1][1] == 'o') {
-            numberPlayingField = 7;
+            return 7;
         } else if (FIELD[2][0] == 'o' && FIELD[2][2] == 'o' || FIELD[0][1] == 'o' && FIELD[1][1] == 'o') {
-            numberPlayingField = 8;
+            return 8;
         } else if (FIELD[0][2] == 'o' && FIELD[1][2] == 'o' || FIELD[2][0] == 'o' && FIELD[2][1] == 'o'
                 || FIELD[0][0] == 'o' && FIELD[1][1] == 'o') {
-            numberPlayingField = 9;
+            return 9;
+        }
+        else {
+            return 0;
         }
     }
 
 
-    private void testLoseComputer() {
+    private int testLoseComputer() {
         if (FIELD[0][1] == 'x' && FIELD[0][2] == 'x' || FIELD[1][0] == 'x' && FIELD[2][0] == 'x'
                 || FIELD[1][1] == 'x' && FIELD[2][2] == 'x') {
-            numberPlayingField = 1;
+            return 1;
         } else if (FIELD[0][0] == 'x' && FIELD[0][2] == 'x' || FIELD[1][1] == 'x' && FIELD[2][1] == 'x') {
-            numberPlayingField = 2;
+            return 2;
         } else if (FIELD[0][0] == 'x' && FIELD[0][1] == 'x' || FIELD[1][2] == 'x' && FIELD[2][2] == 'x'
                 || FIELD[2][0] == 'x' && FIELD[1][1] == 'x') {
-            numberPlayingField = 3;
+            return 3;
         } else if (FIELD[0][0] == 'x' && FIELD[2][0] == 'x' || FIELD[1][1] == 'x' && FIELD[1][2] == 'x') {
-            numberPlayingField = 4;
+            return 4;
         } else if (FIELD[0][0] == 'x' && FIELD[2][2] == 'x' || FIELD[0][2] == 'x' && FIELD[2][0] == 'x'
                 || FIELD[1][0] == 'x' && FIELD[1][2] == 'x' || FIELD[0][1] == 'x' && FIELD[2][1] == 'x') {
-            numberPlayingField = 5;
+            return 5;
         } else if (FIELD[0][2] == 'x' && FIELD[2][2] == 'x' || FIELD[1][0] == 'x' && FIELD[1][1] == 'x') {
-            numberPlayingField = 6;
+            return 6;
         } else if (FIELD[0][0] == 'x' && FIELD[1][0] == 'x' || FIELD[2][1] == 'x' && FIELD[2][2] == 'x'
                 || FIELD[0][2] == 'x' && FIELD[1][1] == 'x') {
-            numberPlayingField = 7;
+            return 7;
         } else if (FIELD[2][0] == 'x' && FIELD[2][2] == 'x' || FIELD[0][1] == 'x' && FIELD[1][1] == 'x') {
-            numberPlayingField = 8;
+            return 8;
         } else if (FIELD[0][2] == 'x' && FIELD[1][2] == 'x' || FIELD[2][0] == 'x' && FIELD[2][1] == 'x'
                 || FIELD[0][0] == 'x' && FIELD[1][1] == 'x') {
-            numberPlayingField = 9;
+            return 9;
+        }
+        else {
+            return 0;
         }
     }
 
-    private void computerMoveLogic() {
-        if (numberMovies == 1) {
-            computerLogicFirstMove();
-        }
-
-            if (FIRST_MOVE == 1) {
-                testWinComputer();
-                testLoseComputer();
-                }
-            else {
-                testLoseComputer();
-                testWinComputer();
-            }
-        }
 
     private char checkInputComputerSign() {
         if(FIRST_MOVE == 1) {
@@ -289,34 +299,34 @@ public class TicTacToe {
     }
 
     private boolean checkConditionVictory() {
-        if (FIELD[0][0] == 'x' && FIELD[0][1] == 'x' && FIELD[0][2] == 'x'
-                || FIELD[1][0] == 'x' && FIELD[1][1] == 'x' && FIELD[1][2] == 'x'
-                || FIELD[2][0] == 'x' && FIELD[2][1] == 'x' && FIELD[2][2] == 'x'
-                || FIELD[0][0] == 'x' && FIELD[1][0] == 'x' && FIELD[2][0] == 'x'
-                || FIELD[0][1] == 'x' && FIELD[1][1] == 'x' && FIELD[2][1] == 'x'
-                || FIELD[0][2] == 'x' && FIELD[1][2] == 'x' && FIELD[2][2] == 'x'
-                || FIELD[0][0] == 'x' && FIELD[1][1] == 'x' && FIELD[2][2] == 'x'
-                || FIELD[0][2] == 'x' && FIELD[1][1] == 'x' && FIELD[2][0] == 'x') {
-            if(FIRST_MOVE == 1) {
+           if (FIELD[0][0] == 'x' && FIELD[0][1] == 'x' && FIELD[0][2] == 'x'
+            || FIELD[1][0] == 'x' && FIELD[1][1] == 'x' && FIELD[1][2] == 'x'
+            || FIELD[2][0] == 'x' && FIELD[2][1] == 'x' && FIELD[2][2] == 'x'
+            || FIELD[0][0] == 'x' && FIELD[1][0] == 'x' && FIELD[2][0] == 'x'
+            || FIELD[0][1] == 'x' && FIELD[1][1] == 'x' && FIELD[2][1] == 'x'
+            || FIELD[0][2] == 'x' && FIELD[1][2] == 'x' && FIELD[2][2] == 'x'
+            || FIELD[0][0] == 'x' && FIELD[1][1] == 'x' && FIELD[2][2] == 'x'
+            || FIELD[0][2] == 'x' && FIELD[1][1] == 'x' && FIELD[2][0] == 'x') {
+        if(FIRST_MOVE == 1) {
                 System.out.println("Игра окончена. Вы победили.");
             }
-            else {
+        else {
                 System.out.println("Игра окончена. Победил компьютер.");
             }
             return true;
         }
-        else if (FIELD[0][0] == 'o' && FIELD[0][1] == 'o' && FIELD[0][2] == 'o'
-                || FIELD[1][0] == 'o' && FIELD[1][1] == 'o' && FIELD[1][2] == 'o'
-                || FIELD[2][0] == 'o' && FIELD[2][1] == 'o' && FIELD[2][2] == 'o'
-                || FIELD[0][0] == 'o' && FIELD[1][0] == 'o' && FIELD[2][0] == 'o'
-                || FIELD[0][1] == 'o' && FIELD[1][1] == 'o' && FIELD[2][1] == 'o'
-                || FIELD[0][2] == 'o' && FIELD[1][2] == 'o' && FIELD[2][2] == 'o'
-                || FIELD[0][0] == 'o' && FIELD[1][1] == 'o' && FIELD[2][2] == 'o'
-                || FIELD[0][2] == 'o' && FIELD[1][1] == 'o' && FIELD[2][0] == 'o') {
-            if(FIRST_MOVE == 1) {
+      else if (FIELD[0][0] == 'o' && FIELD[0][1] == 'o' && FIELD[0][2] == 'o'
+            || FIELD[1][0] == 'o' && FIELD[1][1] == 'o' && FIELD[1][2] == 'o'
+            || FIELD[2][0] == 'o' && FIELD[2][1] == 'o' && FIELD[2][2] == 'o'
+            || FIELD[0][0] == 'o' && FIELD[1][0] == 'o' && FIELD[2][0] == 'o'
+            || FIELD[0][1] == 'o' && FIELD[1][1] == 'o' && FIELD[2][1] == 'o'
+            || FIELD[0][2] == 'o' && FIELD[1][2] == 'o' && FIELD[2][2] == 'o'
+            || FIELD[0][0] == 'o' && FIELD[1][1] == 'o' && FIELD[2][2] == 'o'
+            || FIELD[0][2] == 'o' && FIELD[1][1] == 'o' && FIELD[2][0] == 'o') {
+        if(FIRST_MOVE == 1) {
                 System.out.println("Игра окончена. Победил компьютер");
             }
-            else {
+        else {
                 System.out.println("Игра окончена. Вы победили");
             }
             return true;
